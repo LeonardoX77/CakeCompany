@@ -1,1 +1,7 @@
 /.vs
+/CakeCompany.UnitTest/bin
+/CakeCompany.UnitTest/obj
+/CakeCompany/bin
+/CakeCompany/obj
+
+
