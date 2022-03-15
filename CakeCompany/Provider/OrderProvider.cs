@@ -2,20 +2,15 @@
 using CakeCompany.Models;
 
 namespace CakeCompany.Provider;
-
-internal class OrderProvider
+public class OrderProvider: IOrderProvider
 {
     public Order[] GetLatestOrders()
     {
         return new Order[]
         {
-            new("CakeBox", DateTime.Now, 1, Cake.RedVelvet, 120.25),
-            new("ImportantCakeShop", DateTime.Now, 1, Cake.RedVelvet, 120.25)
+            new("CakeBox", DateTime.Now.AddHours(2), 1, CakeEnum.RedVelvet, 120.25),
+            new("ImportantCakeShop", DateTime.Now.AddHours(2), 1, CakeEnum.RedVelvet, 120.25)
         };
-    }
-
-    public void UpdateOrders(Order[] orders)
-    {
     }
 }
 

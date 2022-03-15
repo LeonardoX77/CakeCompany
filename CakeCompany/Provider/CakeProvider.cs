@@ -1,19 +1,17 @@
 ﻿using CakeCompany.Models;
 
 namespace CakeCompany.Provider;
-
-internal class CakeProvider
+public class CakeProvider: ICakeProvider
 {
-    public DateTime Check(Order order)
+    public DateTime GetEstimatedBakeTime(Order order)
     {
-        if (order.Name == Cake.Chocolate)
+        switch (order.CakeType)
         {
-            return DateTime.Now.Add(TimeSpan.FromMinutes(30));
-        }
-
-        if (order.Name == Cake.RedVelvet)
-        {
-            return DateTime.Now.Add(TimeSpan.FromMinutes(60));
+            case CakeEnum.Chocolate:
+            case CakeEnum.RedVelvet:
+                return DateTime.Now.Add(TimeSpan.FromMinutes((int)order.CakeType));
+            case CakeEnum.Vanilla:
+                break;
         }
 
         return DateTime.Now.Add(TimeSpan.FromHours(15));
@@ -21,31 +19,11 @@ internal class CakeProvider
 
     public Product Bake(Order order)
     {
-        if (order.Name == Cake.Chocolate)
-        {
-            return new()
-            {
-                Cake = Cake.Chocolate,
-                Id = new Guid(),
-                Quantity = order.Quantity
-            };
-        }
-
-        if (order.Name == Cake.RedVelvet)
-        {
-            return new()
-            {
-                Cake = Cake.RedVelvet,
-                Id = new Guid(),
-                Quantity = order.Quantity
-            };
-        }
-
         return new()
         {
-            Cake = Cake.Vanilla,
-            Id = new Guid(),
+            CakeType = order.CakeType,
+            Id = Guid.NewGuid(),
             Quantity = order.Quantity
-        }; ;
+        };
     }
 }

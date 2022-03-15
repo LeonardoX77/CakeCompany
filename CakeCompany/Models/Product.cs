@@ -1,9 +1,11 @@
 ﻿namespace CakeCompany.Models;
 
-internal class Product
+public class Product
 {
     public Guid Id { get; set; }
-    public Cake Cake { get; set; }
+    public CakeEnum CakeType { get; set; }
     public double Quantity { get; set; }
-    public int OrderId { get; set; }
+
+    //NOTE: this property is inclongruous. 
+    //public int OrderId { get; set; }
 }

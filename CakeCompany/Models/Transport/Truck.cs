@@ -1,6 +1,6 @@
 ﻿namespace CakeCompany.Models.Transport;
 
-internal class Truck
+public class Truck : ITransport
 {
     public bool Deliver(List<Product> products)
     {

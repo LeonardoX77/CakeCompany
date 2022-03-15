@@ -4,67 +4,50 @@ using CakeCompany.Models.Transport;
 
 namespace CakeCompany.Provider;
 
-internal class ShipmentProvider
+public class ShipmentProvider
 {
-    public void GetShipment()
+    private IOrderProvider orderProvider;
+    private ICakeProvider cakeProvider;
+
+    public ShipmentProvider(IOrderProvider orderProvider, ICakeProvider cakeProvider)
+    {
+        this.orderProvider = orderProvider;
+        this.cakeProvider = cakeProvider;
+    }
+
+    public List<Product> GetShipment()
     {
         //Call order to get new orders
-        var orderProvider = new OrderProvider();
-
+        List<Product> result = new();
         var orders = orderProvider.GetLatestOrders();
 
         if (!orders.Any())
         {
-            return;
+            return result;
         }
-
-        var cancelledOrders = new List<Order>();
-        var products = new List<Product>();
 
         foreach (var order in orders)
         {
-            var cakeProvider = new CakeProvider();
+            var estimatedBakeTime = cakeProvider.GetEstimatedBakeTime(order);
 
-            var estimatedBakeTime = cakeProvider.Check(order);
-
-            if (estimatedBakeTime > order.EstimatedDeliveryTime)
+            if (estimatedBakeTime <= order.EstimatedDeliveryTime)
             {
-                cancelledOrders.Add(order);
-                continue;
+                if (PaymentProvider.Process(order).IsSuccessful)
+                {
+                    var product = cakeProvider.Bake(order);
+                    result.Add(product);
+                }
             }
-
-            var payment = new PaymentProvider();
-
-            if (!payment.Process(order).IsSuccessful)
-            {
-                cancelledOrders.Add(order);
-                continue;
-            }
-
-            var product = cakeProvider.Bake(order);
-            products.Add(product);
         }
             
-        var transportProvider = new TransportProvider();
-
-        var transport = transportProvider.CheckForAvailability(products);
-
-        if (transport == "Van")
+        var transport = TransportProvider.GetTransport(result.Sum(p => p.Quantity));
+        if (transport.Deliver(result))
         {
-            var van = new Van();
-            van.Deliver(products);
+            return result;
         }
-
-        if (transport == "Truck")
+        else
         {
-            var truck = new Truck();
-            truck.Deliver(products);
-        }
-
-        if (transport == "Ship")
-        {
-            var ship = new Ship();
-            ship.Deliver(products);
+            return new();
         }
     }
 }

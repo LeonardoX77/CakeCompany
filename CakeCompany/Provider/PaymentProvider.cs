@@ -1,24 +1,15 @@
 ﻿using CakeCompany.Models;
 
 namespace CakeCompany.Provider;
-
-internal class PaymentProvider
+public class PaymentProvider: IPaymentProvider
 {
-    public PaymentIn Process(Order order)
+    public static PaymentIn Process(Order order)
     {
-        if (order.ClientName.Contains("Important"))
-        {
-            return new PaymentIn
-            {
-                HasCreditLimit = false,
-                IsSuccessful = true
-            };
-        }
-
         return new PaymentIn
         {
-            HasCreditLimit = true,
+            HasCreditLimit = !order.ClientName.Contains("Important"),
             IsSuccessful = true
         };
     }
 }
+

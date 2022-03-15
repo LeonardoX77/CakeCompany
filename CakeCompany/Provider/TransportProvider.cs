@@ -1,21 +1,17 @@
 ﻿using CakeCompany.Models;
+using CakeCompany.Models.Transport;
 
 namespace CakeCompany.Provider;
-
-internal class TransportProvider
+public class TransportProvider: ITransportProvider
 {
-    public string CheckForAvailability(List<Product> products)
+    public static ITransport GetTransport(double quantityAmount)
     {
-        if (products.Sum(p => p.Quantity) < 1000)
-        {
-            return "Van";
-        }
+        if (quantityAmount <= 1000)
+            return TransportFactory.Create<Van>();
 
-        if (products.Sum(p => p.Quantity) > 1000 && products.Sum(p => p.Quantity) < 5000)
-        {
-            return "Truck";
-        }
+        else if (quantityAmount > 1000 && quantityAmount < 5000)
+            return TransportFactory.Create<Truck>();
 
-        return "Ship";
+        return TransportFactory.Create<Ship>();
     }
 }
